@@ -1,4 +1,4 @@
-# HTTP - Request, Response 최종
+# HTTP - Request, Response
 
 ### 목차
 
@@ -7,7 +7,7 @@
         - 개념적 정의
         - 왜 필요한가
     - HTTP의 클라이언트-서버 구조 통신
-    - HTTP Request와 Response가 어떻게 전달되는가 (Application Layer, TCP 세그먼트로 포장, 네트워크 상으로 전달)
+    - HTTP Request와 Response가 어떻게 전달되는가
 - Request, Response를 통한 클라이언트-서버 통신
     - Request, Response의 개념
     - HTTP Message 포맷
@@ -18,11 +18,6 @@
                 - Content-Type
                 - Content-Length
                 - Content-Encoding
-            - 헤더를 통해 알 수 있는 데이터 전송 방식
-                - 단순 전송: Content-Length
-                - 압축 전송: Content-Encoding
-                - 분할 전송: Transfer-Encoding
-                - 범위 전송: Range, Content-Range
         - 메세지 바디
             - 페이로드를 담아서 전송한다 라고 이야기 함
     - Request Message 분석하기
@@ -40,8 +35,9 @@
             - Location
             - Allow
     - 언제까지 connection을 유지할까
-        - 기본적으로는 연결을 유지하지 않는다고 정의되어 있는데, HTTP/1.1 이상에서는 “persistent connection”을 기본으로 한다고 함
-        - 헤더의 Connection 필드로 이 요청/응답 다음에 커넥션을 종료할 것인지 여부를 명시할 수 있음 →요청응답이 계속해서 오가는 상황에서!
+
+
+---
 
 
 ## 1. HTTP는 무엇인가
