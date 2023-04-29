@@ -168,3 +168,6 @@ beans {
 #### ApplicationContext에서 Bean을 등록하기 위해서는 크게 세 가지 방법을 많이 사용한다.(XML, Annotation, Java code)
 
 위에 있는 과정을 통해 Bean을 등록하면 ApplicationContext가 bean을 자동으로 주입해준다. 따라서 개발자가 신경쓸 부분이 많이 줄어든다!!
+    
+    
+[블로그 주소](https://konghana01.tistory.com/601)
