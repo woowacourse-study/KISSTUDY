@@ -19,7 +19,7 @@ Simply put, this allows for loose coupling of components and moves the responsib
 
 ### **IoC container (Spring Container)**
 
-<img src="">
+<img src="https://github.com/woowacourse-study/KISSTUDY/blob/main/spring/core/ioccontainer/image.png">
 
 - 스프링 프레임워크에서 IoC를 통해 Object를 관리하기 위해 사용하는 개념
 - BeanFactory / ApplicationContext 인터페이스
