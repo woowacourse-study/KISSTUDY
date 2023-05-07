@@ -232,6 +232,10 @@ because it is usually the responsibility of repositories and business logic to c
     - 수정자 주입처럼 setXXX의 형태여야 하지만, 수정자 주입과 다르게 여러 개의 파라미터를 넘길 수 있다.
 - 일반적으로 잘 사용하지 않는 방법이다.
 
+---
+
+- 추가적으로 자세한 내용은 블로그에 정리해두었습니다~
+👉 [블로그 글 바로가기](https://cl8d.tistory.com/81)
 
 ---
 
