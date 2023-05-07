@@ -53,7 +53,7 @@ Serlvet 객체는 스스로 동작하지 않기 때문에 누군가가 제어를
 
 ServletContainer는 Servlet을 생성하고, 관리하는 역할을 한다.
 
-- **ServletContainer가 하는 일**
+#### **ServletContainer가 하는 일**
     - Servlet 생성, 관리
     - Servlet LifeCycle 관리
     - Web Server와의 통신 지원
@@ -103,14 +103,14 @@ ServletContainer는 Servlet을 생성하고, 관리하는 역할을 한다.
 - Front Controller: 가장 먼저 Request를 받는 컨트롤러를 의미한다. 요청을 받고, 이를 처리할 수 있는 핸들러를 찾아서 해당 핸들러에게 요청을 위임한다.
 - 보통 MVC는 Servlet을 기반으로 구현이 되기 때문에, FrontController 역할을 하는 객체가 서블릿인 경우가 많다.
 
-**Spring MVC에서도 DispatcherServlet이 Front Controller의 역할을 한다.**
+#### **Spring MVC에서도 DispatcherServlet이 Front Controller의 역할을 한다.**
 
 > DispatcherServlet이 Request에 대한 공통적인 처리를 진행하고, 실제 비즈니스 로직은 해당 요청을 처리할 수 있는 개별 handler에 의해 실행된다.
 > 
 
 ![image](https://user-images.githubusercontent.com/70891072/236691787-9866cc99-b5e9-4a52-880c-c39847f9ddb7.png)
 
-**DispatcherServlet의 장점**
+#### **DispatcherServlet의 장점**
 
 모든 요청을 DispatcherServlet이 받고, 내부에서 알아서 이를 처리할 controller를 찾아 책임을 위임해주기 때문에 개발자가 별도로 해당 부분을 신경쓰지 않아도 된다.
 
@@ -118,6 +118,7 @@ ServletContainer는 Servlet을 생성하고, 관리하는 역할을 한다.
 
 ![image](https://user-images.githubusercontent.com/70891072/236691799-2077f8b6-ed0d-4688-8769-4da46b55d465.png)
 
+<br>
 클라이언트로부터 요청을 받고, 처리하는 전체적인 구조는 위와 같다.
 
 Servlet Container는 요청을 처리할 수 있는 Servlet 인스턴스들을 내부에서 관리하며, 요청이 오면 이를 처리할 수 있는 Servlet에게 위임한다.
@@ -126,7 +127,7 @@ Servlet Container는 요청을 처리할 수 있는 Servlet 인스턴스들을 �
     - DispatcherServlet에 Request가 가기 전에 Filter를 먼저 거치긴 한다.
 - 그 외의 다른 Tomcat Servlet으로는 JSP Servlet, Default Servlet, Error Handling Servlet 등이 있다. (이들은 Spring이 관리하는 Servlet이 아님)
 
-**DispatcherServlet의 등록**
+#### **DispatcherServlet의 등록**
 
 DispatcherServlet도 다른 서블릿들 처럼, Java Configuration이나 web.xml을 통해 선언되고, URL과 매핑되어야 한다.
 
@@ -170,6 +171,8 @@ DispatcherServlet도 다른 서블릿들 처럼, Java Configuration이나 web.xm
 7. HandlerAdapter가 controller의 결과를 후처리하고, 이를 다시 DispatcherServlet으로 반환한다.
 8. 서버가 클라이언트로 응답을 반환한다.
 <br><br>
+
+#### 자세한 동작 과정
 
 1. **요청이 들어오면, 이를 DispatcherServlet이 받는다.**
     1. 가장 먼저 HttpServlet의 *service(ServletRequest, ServletResponse)* 가 호출된다.
