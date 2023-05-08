@@ -12,11 +12,12 @@
 3. DispatcherServlet 디테일
     1. DispatcherServlet 상속 구조
     2. DispatcherServlet의 WebApplicationContext 구조
-    3. ~~처리 흐름 소스코드로 따라가보기… 는 정리하기가 너무 힘들어서 우선 생략했습니다~~
-        - ~~Interceptor가 언제 동작하는가 → preHandle, postHandle~~
-        - ~~ArgumentResolver가 언제 동작하는가~~
-        - ~~ReturnValueHandler가 언제 동작하는가~~
-    4. 자주 사용하는 HandlerAdapter, HandlerMapping 구현체
+    3. 자주 사용하는 HandlerAdapter, HandlerMapping 구현체
+    4. 처리 흐름 소스코드로 따라가보기
+        - Interceptor가 언제 동작하는가 → preHandle, postHandle
+        - ArgumentResolver가 언제 동작하는가
+        - ReturnValueHandler가 언제 동작하는가
+
     
 
 #### 마크다운으로 깔끔하게 정리가 안돼서 [노션 주소](https://somsom13.notion.site/DispatcherServlet-15712ae1d3744f1c82e24a6a433a4f85)도 같이 첨부하겠습니다! 
@@ -293,3 +294,76 @@ DispatcherServlet은 자신만의 WebApplicationContext(ApplicationContext를 �
 - RequestResponseBodyMethodProcessor:
     - `@RequestBody` 어노테이션이 붙은 파라미터는 JSON → 자바 객체로 역직렬화를 해준다. (resolveArgument)
     - `@ResponseBody` 어노테이션이 붙은 반환값을 handle해준다. (handleReturnValue)
+    
+### 4. 소스코드 흐름 분석
+
+**1. HttpServlet의 public *service* 호출**
+
+- 파라미터로 받은 ServletRequest, ServletResponse를 HttpServletRequest, HttpSerlvetResponse로 변환한다.
+1. protected로 구현된 *service(HttpServletRequest, HttpServletResponse)* 호출
+    - **중요: HttpServlet에 있는 protected service 메서드가 있지만, 이를 상속받는 FrameworkServlet에서 해당 메서드를 오버라이딩 한다.**
+    - 따라서, 호출되는 메서드는 FrameworkServlet의 *service* 메서드
+    
+    ![image](https://user-images.githubusercontent.com/70891072/236714919-9e76abfd-ea6c-413d-a2ee-893592fa9d3c.png)
+    
+    FrameworkServlet의 service 메서드
+    
+    - FrameworkServlet에는 PATCH 메서드에 대한 기능만 구현되어 있다.
+        - 부모 클래스인 HttpServlet의 *service*에 다른 HTTP Method에 대한 기능은 모두 구현되어 있기 때문
+    
+    ![image](https://user-images.githubusercontent.com/70891072/236714942-259f6a3d-fb4b-47c3-bae8-4cb2a22e1d09.png)
+    
+    HttpServlet의 service 메서드
+    
+    - HttpServlet 내의 다른 요청들은 위와 같이 **if분기로 doXXX를 호출하는 방식으로 구성**
+    - doXXX 메서드는 FrameworkServlet에서 모두 오버라이딩 하고, 내부에서 *processRequest* 를 호출한다.
+2. FrameworkServlet의 *doProcess(HttpServletRequest, HttpServletResponse)*
+    - Locale 설정, attribute 설정 등의 공통 작업을 하지만 DispatcherServlet의 흐름에는 중요하지 않으니 생략했습니다 ㅎㅎ
+    - **핵심은 내부에서 *doService(HttpServletRequest, HttpServletResponse)* 를 호출한다는 것**
+3. DispatcherServlet의 *doService*
+    - Servlet 내의 WebApplicationContext에 handler들, 그리고 다른 view관련 객체들이 접근할 수 있도록 설정한다.
+    - ***doDispatch(HttpServletRequest, HttpServletResponse)* 호출**
+4. DispatchServlet의 *doDispatch*
+    - Handler에게 실제로 작업을 위임하는 로직을 수행한다.
+    - 부가적인 사전 작업 후, *getHandler()* 를 호출
+
+5-1. DispatcherServlet의 *getHandler()* 
+
+- DispatcherServlet이 가지고 있는 HandlerMapping 구현체들을 통해서, 현재 Request를 처리할 수 있는 Handler를 찾는다.
+- *handlerMapping.getHandler(request) → URL, Sessoin 상태, HTTP Method 등의 요소로 해당 handlerMapping이 handler를 처리할 수 있는지 판단한다.*
+    1. AbstractHandlerMapping 클래스의 getHandler()
+    2.  getHandlerInternal() 호출 → 어노테이션 기반의 Controller인 경우, AbstractMethodHandlerMapping의 메서드가 호출 → HandlerMethod 객체를 찾는다.
+    3. Handler를 찾았다면 getHandlerExecutionChain() → 해당 Request가 필요로 하는 interceptor들을 찾아서 handler와 함께 HandlerExecutionChain 객체로 반환한다.
+- null이 아닌 HandlerExecutionChain을 찾으면 그 즉시 반환하고 handler 찾는 작업을 종료한다.
+
+5-2. DispatcherServlet의 *getHandlerAdapter()*
+
+- HandlerAdapter 구현체들을 모두 확인하면서 Handler를 처리할 수 있는 Adapter를 찾는다.
+    - 해당 handler를 support하는 adpater를 찾으면, 즉시 반환한다.
+
+5-3. *mappedHandler.applyPreHandle()*
+
+- mappedHandler == 앞에서 찾은 HandlerExecutionChain
+- 찾은 Chain 내에 있는 Interceptor의 preHandle() 메서드를 모두 거친다.
+- 모두 true를 반환한다면 handler 메서드를 실행하고
+- false이면 return
+
+5-4. *ha.handle(request, response, handler객체 without Interceptor)*
+
+- ha == 앞에서 찾은 HandlerAdapter
+- Adapter에게 본격적으로 처리를 위임, ArgumentResolver와 ReturnValueHandler가 이 부분에서 동작한다.
+- handle() → handleInternal() → invokeHandlerMethod()
+    - invokeHandlerMethod 내에서는 HandlerMethod를 ServletInvocableHandlerMethod(→ invocableMethod)로 변환한다.
+    - invocable메서드에 ArgumentResolver, ReturnValueHandler들을 세팅해준다.
+- *invocableMethod.invokeAndHandle() → invokeForRequest()*
+    - invokeForRequest 메서드 내에서 ArgumentResolver를 통해 컨트롤러를 위한 파라미터로 변환
+    - 변환 후, *doInvke()* 메서드를 통해 파라미터들을 넘겨서 실제 컨트롤러 실행
+- invokeAndHandle 내에서 *handleReturnValue* 로 최종적으로 결과를 처리한다. (HandlerAdpater내의 로직).
+
+5-5. 다시 DispatcherServlet의 doDispatch() 내에서 *mappedHandler.applyPostHandle()*
+
+- Interceptor의 postHandle 처리
+
+5-6. *processDispatchResult*
+
+- ModelAndView를 반환하는 경우, ViewResolver를 통해 View를 찾고 반환한다.
