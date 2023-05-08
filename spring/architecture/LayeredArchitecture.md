@@ -1,7 +1,4 @@
 ## SW와 Architecture. Architecture를 쓰는 이유?
-
----
-
 - SW는 복잡하다. 큰 계획 없이 개발하다보면 얽히고 설킨 구조의 코드가 만들어진다
     - 하지만 SW는 주기적으로 변경이 필요하다
     - 변경하고 싶다면, 이 얽히고 설킨 구조를 끊어내고 변경해주고, 다시 얽히고 설킨 구조로 돌려놔야한다
@@ -9,20 +6,16 @@
 - 아키텍처를 적용하면 구조가 잘 정리된다
     - 변경에 용이해진다
 
+
+
 ## Architecture의 목표
-
----
-
 - SW를 쉽게 변경할 수 있는 구조로 설계해 유지보수를 쉽게 함
 - Domain을 보호하고, 집중하게끔 만들기 위함
 
+
 ## Architecture 적용
-
----
-
 SW의 큰 구성은 Domain, Infra Structure로 나눌 수 있다
-
-![스크린샷 2023-04-17 오후 2.12.08.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/5a178078-c54e-49cc-8863-adac88741346/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2023-04-17_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_2.12.08.png)
+<img width="498" alt="스크린샷 2023-04-17 오후 2 12 08" src="https://user-images.githubusercontent.com/67318165/236946252-ea2e1b24-ffc9-4110-8162-f4e14785b4f1.png">
 
 **Domain**: SW를 통해 이루고자하는 핵심적인 요소들 
 
@@ -33,14 +26,11 @@ ex) 주문 접수 채널 운영시 주문을 접수하는 프로세스, 정책�
 ex) UI, DB, API
 
 ## Hierarchical Architecture
-
----
-
 - 계층형 아키텍처
 - 목적이 같은 코드들을 계층으로 그룹화(관심사의 분리)
     
-    ![스크린샷 2023-04-17 오후 2.18.06.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/834bb521-1712-47c3-9635-5c5eef7cf712/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2023-04-17_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_2.18.06.png)
-    
+<img width="751" alt="스크린샷 2023-04-17 오후 2 18 06" src="https://user-images.githubusercontent.com/67318165/236946424-328c28eb-f172-4215-9bd6-345ab53d6a84.png">
+
 - 하지만 위 그림과 같이 직접적으로 계층을 참조하는 경우, 몇 가지 문제점이 있다
     - **연쇄적인 참조관계**: presentation Layer → Domain Layer → Persistence Layer이 결국 Presentation Layer → Persistence Layer이 되는 것
         - 결과적으로 Persistence Layer의 data를 변경하면 그 변경의 영향이 Domain Layer → Presentation Layer로 영향미친다
@@ -52,9 +42,6 @@ ex) UI, DB, API
         - 보호받아야 할 Domain Layer안의 업무 Logic들이 여러 계층의 변경에 영향을 받는다
 
 ## Clean Architecture
-
----
-
 - Hierarchical Architecture의 의존성 문제가 보완된 것
 - 이 4개의 원중에서 가장 중요한 항목은 Use Cases, Entities
     - 이 2개의 원에 Business 규칙이 정의되어 있음
@@ -73,9 +60,7 @@ Entity: domain 객체
 
 ## Clean Architecture를 적용한 Hierarchical Architecture
 
----
-
-![스크린샷 2023-04-17 오후 2.52.55.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/e50f53b3-dc34-40cb-86c0-b8f25ba8cb34/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2023-04-17_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_2.52.55.png)
+<img width="816" alt="스크린샷 2023-04-17 오후 2 52 55" src="https://user-images.githubusercontent.com/67318165/236946571-ecb9af94-bd79-46ec-8f96-68175960e366.png">
 
 - Use case는 양쪽에 Adapter를 통해 외부와 연결됨
     - Adapter: 220V를 110V로 바꿔주는 Adapter와 매우 유사. 외부의 data를 Domain에서 사용할 수 있는 data 형식으로 변환
@@ -100,11 +85,10 @@ Entity: domain 객체
 - 의존성을 낮추면 각 요소를 독립적으로 Test할 수 있다
     - Domain Entity와 Use case는 참조하는 것이 없어서 독립적으로 Test 가능
 
+
 ## Hexagonal Architecture
 
----
-
-![스크린샷 2023-04-17 오후 4.50.27.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/37280856-845a-4d74-851d-e3972b7cb2f5/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2023-04-17_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_4.50.27.png)
+<img width="866" alt="스크린샷 2023-04-17 오후 4 50 27" src="https://user-images.githubusercontent.com/67318165/236946702-e7faf2aa-7411-46d5-9b3f-315a0a6fbbbb.png">
 
 - 육각형 아키텍쳐
 - Clean architecture를 구현하는 방법을 구체화한 아키텍처
